@@ -19,7 +19,17 @@
   * We take no warranty for this script! 
   * 
   */
+  
+   /*
+  * Check Woocommerce Active
+  * 
+  */
 
+
+/*
+  * Required Functions
+  * 
+  */
 include 'classes/jigoshop_order.class.php';
 include 'classes/jigoshop_orders.class.php';
 include 'classes/jigoshop_tax.class.php';
@@ -153,7 +163,7 @@ class Woo_Jigo_Converter extends WP_Importer {
 		if ( class_exists( 'jigoshop' ) )
 			echo '<div class="error"><p>'.__('Please deactivate your JigoShop plugin.', 'woo_jigo').'</p></div>';
 
-		echo '<p>'.__('Analyzing JigoShop products&hellip;', 'woo_jigo').'</p>';
+		echo '<p>'.__('Analyzing JigoShop orders&hellip;', 'woo_jigo').'</p>';
 
 		echo '<ol>';
 
@@ -162,57 +172,27 @@ class Woo_Jigo_Converter extends WP_Importer {
 				SELECT p.ID
 				FROM $wpdb->posts AS p, $wpdb->postmeta AS pm
 				WHERE
-					p.post_type = 'product'
-					AND pm.meta_key = 'product_data'
+					p.post_type = 'shop_order'
+					AND pm.meta_key = 'order_data'
 					AND pm.meta_value != ''
 					AND pm.post_id = p.ID
 				";
 			$product_ids = $wpdb->get_col($q);
 			$products = count($product_ids);
-			printf( '<li>'.__('<b>%d</b> products were identified', 'woo_jigo').'</li>', $products );
+			printf( '<li>'.__('<b>%d</b> orders were identified', 'woo_jigo').'</li>', $products );
 		}
 		else {
 			$q = "
 				SELECT ID
 				FROM $wpdb->posts
-				WHERE post_type = 'product'
+				WHERE post_type = 'shop_order'
 				";
 			$product_ids = $wpdb->get_col($q);
 			$products = count($product_ids);
-			printf( '<li>'.__('<b>%d</b> "possible" products were identified', 'woo_jigo').'</li>', $products );
-		}
-
-		if ( $jigoshop_version < 1202010 ) {
-			$q = "
-				SELECT p.ID
-				FROM $wpdb->posts AS p, $wpdb->postmeta AS pm
-				WHERE
-					p.post_type = 'product_variation'
-					AND BINARY pm.meta_key = 'SKU'
-					AND pm.post_id = p.ID
-				";
-			$variation_ids = $wpdb->get_col($q);
-			$variations = count($variation_ids);
-			printf( '<li>'.__('<b>%d</b> product variations were identified', 'woo_jigo').'</li>', $variations );
-		}
-		else {
-			$q = "
-				SELECT ID
-				FROM $wpdb->posts
-				WHERE post_type = 'product_variation'
-				";
-			$variation_ids = $wpdb->get_col($q);
-			$variations = count($variation_ids);
-			printf( '<li>'.__('<b>%d</b> "possible" product variations were identified', 'woo_jigo').'</li>', $variations );
+			printf( '<li>'.__('<b>%d</b> "possible" orders were identified', 'woo_jigo').'</li>', $products );
 		}
 
 		echo '</ol>';
-
-		if ( $products || $attributes || $variations ) {
-
-			if ( $jigoshop_version >= 1202010 ) {
-				echo '<p><em>'.__('Note: JigoShop v1.0 and greater has many similarities with WooCommerce v1.4 and greater. We need to check all products.', 'woo_jigo').'</em></p>';
-			}
 
 			?>
 			<form name="woo_jigo" id="woo_jigo" action="admin.php?import=woo_jigo&amp;step=1" method="post">
@@ -223,7 +203,6 @@ class Woo_Jigo_Converter extends WP_Importer {
 
 			echo '<p>'.__('<b>Please backup your database first</b>. We are not responsible for any harm or wrong doing this plugin may cause. Users are fully responsible for their own use. This plugin is to be used WITHOUT warranty.', 'woo_jigo').'</p>';
 
-		}
 
 		echo '</div>';
 	}
