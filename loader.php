@@ -1,20 +1,18 @@
 <?php
 /**
  * Plugin Name: Import Jigoshop Orders to Woocommerce
- * Plugin URI:  https://themekraft.com
- * Description: Themekraft Jigoshop orders import to woocommerce partitial
- * Author:      themekraft.com
- * Version:     1.0
- * Author URI:  http://themekraft.com/
- * Text Domain: themekraft
+ * Plugin URI:  https://bradly.risse.com
+ * Description:  Jigoshop orders import to woocommerce 
+ * Author:      bradlyrisse.com
+ * Version:     1.1
+ * Author URI:  http://bradlyrisse.com/
+ * Text Domain: bradlyrisse
  * Domain Path: /languages/
  * Network:     true
  */
 
  /*
-  * This Script imports parts of Jigoshop order values to WooCommerce. The script is not 
-  * complete and was just fitted to our needs. If you want to extend, you're welcome to fork
-  * on Github and do a pull request on this gist.
+  * This Script imports parts of Jigoshop order values to WooCommerce. 
   * 
   * Please be sure you have switched off Jigoshop and switched on WooCommerce.
   * 
@@ -110,6 +108,29 @@ function tk_woo_import_jigo_orders(){
 				$tax_total += $item_tax;
 				$order_total += $item_total;
 				
+				//order_item_id 1 || order_item_name Example Product Name || order_item_type line_item || order_id 4138
+
+				//add item to woocommerce items with woocommerce_add_order_item
+				$newitem_id = woocommerce_add_order_item( $order_id, array(
+                    'order_item_name'       => $item_name,
+                    'order_item_type'       => 'line_item'
+					) );
+            
+					//add item meta to woocommerce_add_order_item_meta
+
+					if ( $newitem_id ) {
+
+						woocommerce_add_order_item_meta( $newitem_id,'_qty',(int) $item_qty);
+						//woocommerce_add_order_item_meta( $item_id,'_tax_class', '');
+						woocommerce_add_order_item_meta( $newitem_id,'_product_id', $item_id);
+						woocommerce_add_order_item_meta( $newitem_id,'_variation_id', $item_variation_id);
+						woocommerce_add_order_item_meta( $newitem_id,'_line_subtotal', $item_cost);
+						woocommerce_add_order_item_meta( $newitem_id,'_line_subtotal_tax', $item_tax);
+						woocommerce_add_order_item_meta( $newitem_id,'_line_total', $item_total);
+						woocommerce_add_order_item_meta( $newitem_id,'_line_tax', $item_tax * $item_qty);
+
+             }
+				
 			endforeach;
 			
 			update_post_meta( $order_id, '_order_tax', 				number_format( $tax_total, 2, '.', '' ) );
@@ -143,4 +164,4 @@ function tk_woo_import_jigo_orders(){
 	endforeach;
 	
 }
-add_action( 'wp_head', 'tk_woo_import_jigo_orders', 21 );
+add_action( 'admin_head', 'tk_woo_import_jigo_orders', 21 );
