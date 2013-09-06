@@ -20,6 +20,7 @@ Import-Jigoshop-Orders-to-Woocommerce
 - Prevent Duplicates
 - Checkboxes to choose orderdata, items, and userdata
 - Check to see what version of woocommerce is installed
+- Button to backup database
 
 ## Credits ##
 
